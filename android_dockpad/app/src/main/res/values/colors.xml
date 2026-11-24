@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_black">#000000</color>
+    <color name="surface_card">#18181B</color>
+    <color name="surface_secondary">#222226</color>
+    <color name="surface_tertiary">#27272A</color>
+    <color name="surface_border">#2E2E32</color>
+
+    <color name="samsung_blue">#0381FE</color>
+    <color name="samsung_blue_dim">#1A2C42</color>
+
+    <color name="alert_red">#FF453A</color>
+    <color name="alert_red_bg">#2C1618</color>
+
+    <color name="status_green">#30D158</color>
+    <color name="status_amber">#FF9F0A</color>
+
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_primary_soft">#F4F4F5</color>
+    <color name="text_secondary">#A1A1AA</color>
+    <color name="text_muted">#71717A</color>
+
+    <color name="whatsapp_green">#25D366</color>
+    <color name="mail_blue">#0381FE</color>
+</resources>

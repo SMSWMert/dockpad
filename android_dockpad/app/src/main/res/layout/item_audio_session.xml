@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_card_secondary"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="12dp"
+    android:paddingVertical="8dp">
+
+    <TextView
+        android:id="@+id/tvAudioAppName"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Chrome"
+        android:textColor="@color/text_primary_soft"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <SeekBar
+        android:id="@+id/seekAudioVol"
+        android:layout_width="0dp"
+        android:layout_height="28dp"
+        android:layout_marginHorizontal="6dp"
+        android:layout_weight="1"
+        android:max="100"
+        android:progress="80"
+        android:progressDrawable="@drawable/seekbar_oneui_progress"
+        android:splitTrack="false"
+        android:thumb="@drawable/seekbar_oneui_thumb" />
+
+    <ImageView
+        android:id="@+id/btnAudioMute"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:padding="6dp"
+        android:src="@drawable/ic_volume_on" />
+</LinearLayout>

@@ -1,0 +1,100 @@
+{
+  "device_name": "Monster Abra A7",
+  "ws_port": 8765,
+  "udp_broadcast_port": 5005,
+  "ram_alert_threshold": 85,
+  "weather": {
+    "city": "Ankara",
+    "temp_c": 6,
+    "condition": "Açık",
+    "icon": "night_clear"
+  },
+  "actions": [
+    {
+      "id": "codex",
+      "label": "Codex",
+      "type": "command",
+      "target": "cmd /c start wt.exe -p \"Command Prompt\" cmd /k codex",
+      "icon": "terminal"
+    },
+    {
+      "id": "antigravity",
+      "label": "Antigravity",
+      "type": "app",
+      "target": "%LOCALAPPDATA%\\Programs\\Antigravity\\Antigravity.exe",
+      "icon": "rocket"
+    },
+    {
+      "id": "meta_ads",
+      "label": "Meta Ads",
+      "type": "url",
+      "target": "https://adsmanager.facebook.com/",
+      "icon": "campaign"
+    },
+    {
+      "id": "premiere",
+      "label": "Premiere",
+      "type": "app",
+      "target": "C:\\Program Files\\Adobe\\Adobe Premiere Pro 2024\\Adobe Premiere Pro.exe",
+      "icon": "movie"
+    },
+    {
+      "id": "screenshot",
+      "label": "Ekran Görüntüsü",
+      "type": "hotkey",
+      "target": "WIN+SHIFT+S",
+      "icon": "screenshot"
+    },
+    {
+      "id": "audio_switch",
+      "label": "Ses Çıkışı",
+      "type": "internal",
+      "target": "toggle_audio_output",
+      "icon": "headphones"
+    }
+  ],
+  "prompts": [
+    {
+      "id": "p_creative_v2",
+      "title": "Creative Writing v2",
+      "category": "Antigravity",
+      "description": "Tasarım ve içerik hazırlama için yaratıcı senaryo ve metin kurgusu.",
+      "text": "Aşağıdaki ürün/konu için hedef kitleye uygun, dikkat çekici 3 farklı yaratıcı metin ve görsel senaryo önerisi hazırla:\n"
+    },
+    {
+      "id": "p_api_refactor",
+      "title": "API Refactor script",
+      "category": "Codex",
+      "description": "Kod bloklarını optimize eden ve refactor sürecini hızlandıran şablon.",
+      "text": "Bu modülü SOLID prensiplerine göre refactor et, gereksiz tekrarları kaldır, tip güvenliğini artır ve performans darboğazlarını raporla."
+    },
+    {
+      "id": "p_system_debug",
+      "title": "System Debug",
+      "category": "Codex",
+      "description": "Hata günlüklerini analiz etmek ve kök nedeni bulmak için debug promptu.",
+      "text": "Aşağıdaki stack trace ve log çıktısını analiz et. Kök nedeni, olası yan etkileri ve minimum değişiklikle kalıcı çözümü yaz:\n"
+    },
+    {
+      "id": "p_ad_campaign",
+      "title": "Reklam Kampanyası",
+      "category": "Reklam",
+      "description": "Meta Ads ve dijital mecralar için yüksek dönüşümlü reklam metni.",
+      "text": "Meta Ads kampanyası için 3 farklı Hook (ilk 3 saniye), ana gövde metni ve net CTA içeren A/B test varyantları oluştur:\n"
+    },
+    {
+      "id": "p_ag_plan",
+      "title": "Mimari Planlama",
+      "category": "Antigravity",
+      "description": "Yeni özellik öncesi teknik tasarım ve adım adım uygulama planı.",
+      "text": "Kod yazmaya başlamadan önce bu özelliğin dosya yapısını, veri akışını, kenar durumlarını ve test stratejisini çıkar."
+    },
+    {
+      "id": "p_roas_audit",
+      "title": "ROAS & Kreatif Analiz",
+      "category": "Reklam",
+      "description": "Kampanya metriklerine göre ölçekleme ve kreatif yenileme önerisi.",
+      "text": "Verilen CTR, CPC, CPA ve ROAS metriklerini inceleyerek hangi reklam setlerinin kapatılması, hangilerinin bütçesinin artırılması gerektiğini açıkla:\n"
+    }
+  ]
+}

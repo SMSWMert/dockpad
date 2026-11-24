@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">One UI 7 Dock Pad</string>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="pairing_title">PC Pairing &amp; Discovery</string>
+    <string name="pairing_subtitle">Yerel ağdaki companion cihazlara bağlanın</string>
+    <string name="discovery_active">Sürükleme &amp; Keşif Açık</string>
+    <string name="connect">Bağlan</string>
+    <string name="connected">Bağlı</string>
+    <string name="disconnected">Bağlantı Kesildi</string>
+    <string name="found_on_lan">Yerel Ağda Bulundu</string>
+    <string name="other_devices">Diğer Cihazlar</string>
+    <string name="manual_ip_hint">192.168.1.35</string>
+    <string name="now_playing">Şimdi Çalınıyor</string>
+    <string name="no_media">Medya Oynatılmıyor</string>
+    <string name="audio_mixer">Uygulama Ses Mikseri</string>
+    <string name="quick_commands">Hızlı Komutlar</string>
+    <string name="clipboard_prompts_title">Prompt &amp; Pano Kasası</string>
+    <string name="clipboard_history">Pano Geçmişi</string>
+    <string name="expand">Genişlet</string>
+    <string name="paste">Yapıştır</string>
+    <string name="notifications_title">Bildirimler</string>
+    <string name="privacy_mode">Gizlilik Modu</string>
+    <string name="clear_all">Tümünü Temizle</string>
+    <string name="system_monitor_title">Sistem Nöbetçisi</string>
+    <string name="top_consumers">En Çok Kaynak Tüketenler</string>
+    <string name="kill_process">Kapat</string>
+    <string name="settings_title">Ayarlar</string>
+    <string name="filter_all">Tümü</string>
+    <string name="filter_codex">Codex</string>
+    <string name="filter_antigravity">Antigravity</string>
+    <string name="filter_ads">Reklam</string>
+</resources>

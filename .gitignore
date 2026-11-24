@@ -1,0 +1,9 @@
+pc_agent/.venv/
+pc_agent/__pycache__/
+*.pyc
+android_dockpad/.gradle/
+android_dockpad/build/
+android_dockpad/app/build/
+android_dockpad/local.properties
+.idea/
+*.iml
