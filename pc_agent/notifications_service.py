@@ -26,7 +26,7 @@ class NotificationsService:
         if not WINSDK_NOTIF_AVAILABLE:
             return
         try:
-            listener = UserNotificationListener.get_current()
+            listener = UserNotificationListener.current
             if not self._listener_checked:
                 status = await listener.request_access_async()
                 self._listener_allowed = status == UserNotificationListenerAccessStatus.ALLOWED
@@ -47,15 +47,11 @@ class NotificationsService:
                 except Exception:
                     pass
 
-                source = self._classify_source(app_name)
-                if not source:
-                    continue
-
                 sender = app_name
                 body = ""
                 try:
                     toast_binding = notif.notification.visual.get_binding(
-                        KnownNotificationBindings.get_toast_generic()
+                        KnownNotificationBindings.toast_generic
                     )
                     if toast_binding:
                         text_elems = list(toast_binding.get_text_elements())
@@ -66,6 +62,10 @@ class NotificationsService:
                 except Exception:
                     pass
 
+                source = self._classify_source(app_name, sender, body)
+                if not source:
+                    continue
+
                 self.add_notification(
                     source=source,
                     sender=sender or source,
@@ -75,9 +75,10 @@ class NotificationsService:
             pass
 
     @staticmethod
-    def _classify_source(app_name: str) -> str:
+    def _classify_source(app_name: str, sender: str = "", body: str = "") -> str:
         lower = (app_name or "").lower()
-        if "whatsapp" in lower:
+        combined = f"{lower} {(sender or '').lower()} {(body or '').lower()}"
+        if "whatsapp" in lower or ("whatsapp" in combined and any(b in lower for b in ("chrome", "edge", "firefox", "telefon"))):
             return "WhatsApp"
         if any(k in lower for k in ("mail", "outlook", "thunderbird", "gmail", "posta")):
             return "Mail"
