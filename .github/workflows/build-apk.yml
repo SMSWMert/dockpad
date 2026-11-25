@@ -34,7 +34,14 @@ jobs:
 
       - name: Build Debug APK
         working-directory: android_dockpad
-        run: gradle assembleDebug --no-daemon --stacktrace
+        run: gradle assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle_build.log; exit ${PIPESTATUS[0]}
+
+      - name: Upload Build Log on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-build-log
+          path: android_dockpad/gradle_build.log
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4

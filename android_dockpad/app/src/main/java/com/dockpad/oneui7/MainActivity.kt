@@ -10,7 +10,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Base64
-import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -443,22 +442,16 @@ class MainActivity : AppCompatActivity() {
         findViewById<LinearLayout>(R.id.btnDashExpandVault).setOnClickListener { showScreen(SCREEN_PROMPTS_VAULT) }
 
         // Swipe left on Dashboard -> StandBy
-        val dashGesture = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(
-                e1: MotionEvent?,
-                e2: MotionEvent,
-                velocityX: Float,
-                velocityY: Float
-            ): Boolean {
-                if (e1 != null && (e1.x - e2.x) > 140 && Math.abs(velocityX) > 200) {
-                    showScreen(SCREEN_STANDBY)
-                    return true
-                }
-                return false
-            }
-        })
+        var downX = 0f
         findViewById<View>(R.id.dashboardRoot).setOnTouchListener { _, event ->
-            dashGesture.onTouchEvent(event)
+            when (event.actionMasked) {
+                MotionEvent.ACTION_DOWN -> downX = event.x
+                MotionEvent.ACTION_UP -> {
+                    if (downX - event.x > 160f) {
+                        showScreen(SCREEN_STANDBY)
+                    }
+                }
+            }
             false
         }
 
