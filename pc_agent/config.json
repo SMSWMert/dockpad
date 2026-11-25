@@ -12,9 +12,9 @@
   "actions": [
     {
       "id": "codex",
-      "label": "Codex",
-      "type": "command",
-      "target": "cmd /c start wt.exe -p \"Command Prompt\" cmd /k codex",
+      "label": "ChatGPT",
+      "type": "url",
+      "target": "https://chatgpt.com/",
       "icon": "terminal"
     },
     {

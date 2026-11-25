@@ -323,7 +323,7 @@
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
-                        android:text="Codex"
+                        android:text="ChatGPT"
                         android:textColor="@color/text_primary"
                         android:textSize="13sp"
                         android:textStyle="bold" />
