@@ -65,6 +65,8 @@ class MediaService:
             cover_key = f"{title}|{artist}"
             if cover_key != self._last_title:
                 self._last_title = cover_key
+                self._last_cover_b64 = ""
+            if not self._last_cover_b64:
                 self._last_cover_b64 = await self._read_thumbnail_b64(props)
 
             return {
