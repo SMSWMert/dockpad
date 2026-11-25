@@ -67,12 +67,35 @@ def udp_broadcast_loop() -> None:
     sock.close()
 
 
+async def _run_winrt_safe(coro_fn: Any, fallback: Any, timeout_sec: float = 2.5) -> Any:
+    try:
+        return await asyncio.wait_for(
+            asyncio.to_thread(lambda: asyncio.run(coro_fn())),
+            timeout=timeout_sec,
+        )
+    except Exception:
+        return fallback
+
+
 async def build_state_payload() -> Dict[str, Any]:
     telemetry = await asyncio.to_thread(system_service.get_telemetry)
-    media_state = await media_service.get_media_state()
+    media_state = await _run_winrt_safe(
+        media_service.get_media_state,
+        {
+            "active": False,
+            "title": "Medya Oynatılmıyor",
+            "artist": "Monster Abra A7",
+            "album": "",
+            "is_playing": False,
+            "position_sec": 0,
+            "duration_sec": 0,
+            "cover_base64": "",
+            "source_app": "",
+        },
+    )
     audio_state = await asyncio.to_thread(audio_service.get_sessions)
     clipboard_history = await asyncio.to_thread(clipboard_service.get_clipboard_history)
-    await notifications_service.poll_windows_notifications()
+    await _run_winrt_safe(notifications_service.poll_windows_notifications, None)
 
     return {
         "type": "state_update",
@@ -185,7 +208,11 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
                 result = await asyncio.to_thread(actions_service.execute, str(msg.get("id", "")))
 
             elif msg_type == "media_cmd":
-                result = await media_service.send_command(str(msg.get("cmd", "")))
+                cmd_val = str(msg.get("cmd", ""))
+                result = await _run_winrt_safe(
+                    lambda: media_service.send_command(cmd_val),
+                    {"ok": False, "error": "Media command timeout"},
+                )
 
             elif msg_type == "set_app_volume":
                 result = await asyncio.to_thread(
