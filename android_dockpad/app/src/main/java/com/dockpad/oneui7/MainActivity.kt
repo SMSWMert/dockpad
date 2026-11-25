@@ -99,7 +99,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvDashMediaArtist: TextView
     private lateinit var btnDashPlayPause: ImageView
     private lateinit var tvDashAudioOutput: TextView
-    private lateinit var tvDashClip1: TextView
     private lateinit var tvDashPrompt1: TextView
 
     // Views - Notifications
@@ -291,7 +290,6 @@ class MainActivity : AppCompatActivity() {
         tvDashMediaArtist = findViewById(R.id.tvDashMediaArtist)
         btnDashPlayPause = findViewById(R.id.btnDashPlayPause)
         tvDashAudioOutput = findViewById(R.id.tvDashAudioOutput)
-        tvDashClip1 = findViewById(R.id.tvDashClip1)
         tvDashPrompt1 = findViewById(R.id.tvDashPrompt1)
 
         // Notifications
@@ -385,6 +383,10 @@ class MainActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = clipboardAdapter
         }
+        findViewById<RecyclerView>(R.id.rvDashClipboard).apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = clipboardAdapter
+        }
 
         promptAdapter = PromptAdapter { prompt ->
             wsClient.sendPasteText(prompt.text)
@@ -470,13 +472,6 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.btnActionAudioSwitch).setOnClickListener { wsClient.sendToggleAudioOutput() }
 
         // Dashboard Preview Paste
-        findViewById<LinearLayout>(R.id.rowDashClip1).setOnClickListener {
-            val firstClip = currentState.clipboardHistory.firstOrNull()
-            if (firstClip != null) {
-                wsClient.sendPasteText(firstClip.text)
-                Toast.makeText(this, "Pano yapıştırıldı", Toast.LENGTH_SHORT).show()
-            }
-        }
         findViewById<LinearLayout>(R.id.rowDashPrompt1).setOnClickListener {
             val firstPrompt = currentState.prompts.firstOrNull()
             if (firstPrompt != null) {
@@ -644,7 +639,6 @@ class MainActivity : AppCompatActivity() {
         audioAdapter.submitList(state.audioSessions)
 
         // Clipboard & Prompts
-        tvDashClip1.text = state.clipboardHistory.firstOrNull()?.preview ?: "Pano boş"
         tvDashPrompt1.text = state.prompts.firstOrNull()?.title ?: "Prompt yok"
         clipboardAdapter.submitList(state.clipboardHistory)
         renderFilteredPrompts()

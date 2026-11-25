@@ -1,9 +1,13 @@
 import ctypes
+import json
 import time
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List
 
 import pyperclip
+
+HISTORY_FILE = Path(__file__).resolve().parent / "clipboard_history.json"
 
 # Windows SendInput structures for reliable Ctrl+V pasting
 KEYEVENTF_KEYUP = 0x0002
@@ -72,14 +76,32 @@ def send_key_combo(vk_codes: List[int]) -> None:
 
 
 class ClipboardPromptsService:
-    """Tracks PC clipboard history and serves/pastes prompt templates from config.json."""
+    """Tracks persistent PC clipboard history (last 5) and serves/pastes prompt templates from config.json."""
 
-    def __init__(self, prompts: List[Dict[str, Any]], max_history: int = 25) -> None:
+    def __init__(self, prompts: List[Dict[str, Any]], max_history: int = 5) -> None:
         self.prompts = prompts
         self.max_history = max_history
-        self._history: List[Dict[str, str]] = []
-        self._last_seen: str = ""
+        self._history: List[Dict[str, str]] = self._load_history()
+        self._last_seen: str = self._history[0]["text"] if self._history else ""
         self.poll_clipboard()
+
+    def _load_history(self) -> List[Dict[str, str]]:
+        try:
+            if HISTORY_FILE.exists():
+                with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                if isinstance(data, list):
+                    return data[: self.max_history]
+        except Exception:
+            pass
+        return []
+
+    def _save_history(self) -> None:
+        try:
+            with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+                json.dump(self._history[: self.max_history], f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
     def update_prompts(self, prompts: List[Dict[str, Any]]) -> None:
         self.prompts = prompts
@@ -104,6 +126,7 @@ class ClipboardPromptsService:
                 },
             )
             self._history = self._history[: self.max_history]
+            self._save_history()
         except Exception:
             pass
 

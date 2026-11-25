@@ -1,5 +1,6 @@
 pc_agent/.venv/
 pc_agent/__pycache__/
+pc_agent/clipboard_history.json
 *.pyc
 android_dockpad/.gradle/
 android_dockpad/build/

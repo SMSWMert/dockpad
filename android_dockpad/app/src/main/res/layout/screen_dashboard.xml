@@ -458,32 +458,12 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:id="@+id/rowDashClip1"
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvDashClipboard"
                         android:layout_width="match_parent"
-                        android:layout_height="40dp"
+                        android:layout_height="0dp"
                         android:layout_marginBottom="6dp"
-                        android:background="@drawable/bg_card_secondary"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="12dp">
-
-                        <TextView
-                            android:id="@+id/tvDashClip1"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:ellipsize="end"
-                            android:maxLines="1"
-                            android:text="Pano boş"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="13sp" />
-
-                        <ImageView
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:src="@drawable/ic_copy" />
-                    </LinearLayout>
+                        android:layout_weight="1" />
 
                     <LinearLayout
                         android:id="@+id/rowDashPrompt1"
