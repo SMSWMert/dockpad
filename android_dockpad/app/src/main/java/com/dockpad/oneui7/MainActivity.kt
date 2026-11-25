@@ -78,6 +78,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private var focusSecondsLeft: Int = 25 * 60
+    private var focusRunning: Boolean = false
+    private val focusRunnable = object : Runnable {
+        override fun run() {
+            if (focusRunning) {
+                if (focusSecondsLeft > 0) {
+                    focusSecondsLeft--
+                    updateFocusView()
+                    mainHandler.postDelayed(this, 1000L)
+                } else {
+                    focusRunning = false
+                    updateFocusView()
+                    Toast.makeText(this@MainActivity, "Odak süresi tamamlandı!", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
     // Views - Pairing
     private lateinit var tvPairingClock: TextView
     private lateinit var pillPairingMail: TextView
@@ -94,10 +112,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dotDashConnection: View
     private lateinit var tvDashConnection: TextView
     private lateinit var tvDashCpu: TextView
+    private lateinit var tvDashGpu: TextView
     private lateinit var tvDashRam: TextView
+    private lateinit var tvDashFocus: TextView
     private lateinit var ivDashAlbumArt: ImageView
     private lateinit var tvDashMediaTitle: TextView
     private lateinit var tvDashMediaArtist: TextView
+    private lateinit var pbDashMedia: ProgressBar
+    private lateinit var tvDashMediaTime: TextView
     private lateinit var btnDashPlayPause: ImageView
     private lateinit var tvDashAudioOutput: TextView
     private lateinit var tvDashPrompt1: TextView
@@ -118,6 +140,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvSysRamBig: TextView
     private lateinit var tvSysRamUsedTotal: TextView
     private lateinit var tvSysRamAvail: TextView
+    private lateinit var tvSysGpu: TextView
+    private lateinit var tvSysDisk: TextView
+    private lateinit var tvSysNet: TextView
 
     // Views - Prompts Vault
     private lateinit var tvVaultClock: TextView
@@ -285,10 +310,14 @@ class MainActivity : AppCompatActivity() {
         dotDashConnection = findViewById(R.id.dotDashConnection)
         tvDashConnection = findViewById(R.id.tvDashConnection)
         tvDashCpu = findViewById(R.id.tvDashCpu)
+        tvDashGpu = findViewById(R.id.tvDashGpu)
         tvDashRam = findViewById(R.id.tvDashRam)
+        tvDashFocus = findViewById(R.id.tvDashFocus)
         ivDashAlbumArt = findViewById(R.id.ivDashAlbumArt)
         tvDashMediaTitle = findViewById(R.id.tvDashMediaTitle)
         tvDashMediaArtist = findViewById(R.id.tvDashMediaArtist)
+        pbDashMedia = findViewById(R.id.pbDashMedia)
+        tvDashMediaTime = findViewById(R.id.tvDashMediaTime)
         btnDashPlayPause = findViewById(R.id.btnDashPlayPause)
         tvDashAudioOutput = findViewById(R.id.tvDashAudioOutput)
         tvDashPrompt1 = findViewById(R.id.tvDashPrompt1)
@@ -309,6 +338,9 @@ class MainActivity : AppCompatActivity() {
         tvSysRamBig = findViewById(R.id.tvSysRamBig)
         tvSysRamUsedTotal = findViewById(R.id.tvSysRamUsedTotal)
         tvSysRamAvail = findViewById(R.id.tvSysRamAvail)
+        tvSysGpu = findViewById(R.id.tvSysGpu)
+        tvSysDisk = findViewById(R.id.tvSysDisk)
+        tvSysNet = findViewById(R.id.tvSysNet)
 
         // Prompts Vault
         tvVaultClock = findViewById(R.id.tvVaultClock)
@@ -471,6 +503,32 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.btnActionPremiere).setOnClickListener { wsClient.sendAction("premiere") }
         findViewById<TextView>(R.id.btnActionScreenshot).setOnClickListener { wsClient.sendAction("screenshot") }
         findViewById<TextView>(R.id.btnActionAudioSwitch).setOnClickListener { wsClient.sendToggleAudioOutput() }
+        findViewById<TextView>(R.id.btnActionMuteMaster).setOnClickListener { wsClient.sendAction("mute_master") }
+        findViewById<TextView>(R.id.btnActionLockPc).setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("PC Kilitle")
+                .setMessage("Monster Abra A7 oturumu kilitlensin mi?")
+                .setPositiveButton("Kilitle") { _, _ -> wsClient.sendAction("lock_pc") }
+                .setNegativeButton("İptal", null)
+                .show()
+        }
+
+        tvDashFocus.setOnClickListener {
+            focusRunning = !focusRunning
+            mainHandler.removeCallbacks(focusRunnable)
+            if (focusRunning) {
+                mainHandler.postDelayed(focusRunnable, 1000L)
+            }
+            updateFocusView()
+        }
+        tvDashFocus.setOnLongClickListener {
+            focusRunning = false
+            focusSecondsLeft = 25 * 60
+            mainHandler.removeCallbacks(focusRunnable)
+            updateFocusView()
+            Toast.makeText(this, "Odak sayacı sıfırlandı", Toast.LENGTH_SHORT).show()
+            true
+        }
 
         // Dashboard Preview Paste
         findViewById<LinearLayout>(R.id.rowDashPrompt1).setOnClickListener {
@@ -501,6 +559,7 @@ class MainActivity : AppCompatActivity() {
         chipCodex.setOnClickListener { selectPromptFilter("Codex") }
         chipAntigravity.setOnClickListener { selectPromptFilter("Antigravity") }
         chipAds.setOnClickListener { selectPromptFilter("Reklam") }
+        findViewById<TextView>(R.id.btnAddPrompt).setOnClickListener { showAddPromptDialog() }
 
         // StandBy
         findViewById<View>(R.id.standbyRoot).setOnClickListener { showScreen(SCREEN_DASHBOARD) }
@@ -592,11 +651,12 @@ class MainActivity : AppCompatActivity() {
     private fun renderState(state: PcStateUpdate) {
         // Top telemetry
         tvDashCpu.text = "CPU ${state.cpu}%"
+        tvDashGpu.text = "GPU ${state.gpu}%"
         tvDashRam.text = "RAM ${state.ram}%"
         tvDashRam.setTextColor(
             if (state.highRamAlert) Color.parseColor("#FF453A") else Color.parseColor("#F4F4F5")
         )
-        tvVaultTelemetry.text = "CPU ${state.cpu}%  RAM ${state.ram}%"
+        tvVaultTelemetry.text = "CPU ${state.cpu}%  GPU ${state.gpu}%  RAM ${state.ram}%"
 
         // Media
         tvDashMediaTitle.text = state.media.title
@@ -611,8 +671,12 @@ class MainActivity : AppCompatActivity() {
         if (state.media.durationSec > 0) {
             val pct = ((state.media.positionSec * 100f) / state.media.durationSec).toInt().coerceIn(0, 100)
             pbStandbyMedia.progress = pct
+            pbDashMedia.progress = pct
+            tvDashMediaTime.text = "${formatDuration(state.media.positionSec)} / ${formatDuration(state.media.durationSec)}"
         } else {
             pbStandbyMedia.progress = 0
+            pbDashMedia.progress = 0
+            tvDashMediaTime.text = "0:00 / 0:00"
         }
 
         if (state.media.coverBase64.isNotBlank()) {
@@ -654,6 +718,9 @@ class MainActivity : AppCompatActivity() {
         tvSysRamBig.text = "${state.ram}%"
         tvSysRamUsedTotal.text = "${state.ramUsedGb} / ${state.ramTotalGb} GB"
         tvSysRamAvail.text = "Kullanılabilir: ${state.ramAvailableGb} GB"
+        tvSysGpu.text = "${state.gpuName}: ${state.gpu}% • ${state.gpuTemp}°C"
+        tvSysDisk.text = "Disk: %${state.disk}"
+        tvSysNet.text = "↓ ${state.netDownMbps} • ↑ ${state.netUpMbps} Mbps"
 
         if (state.highRamAlert) {
             pillSysRamWarning.visibility = View.VISIBLE
@@ -809,5 +876,55 @@ class MainActivity : AppCompatActivity() {
             }
             startActivity(Intent.createChooser(intent, "Varsayılan Ana Ekran Seç"))
         }
+    }
+
+    private fun updateFocusView() {
+        val mins = focusSecondsLeft / 60
+        val secs = focusSecondsLeft % 60
+        val label = String.format(Locale.US, "%02d:%02d", mins, secs)
+        tvDashFocus.text = if (focusRunning) "Odak $label" else "Odak $label"
+        tvDashFocus.setTextColor(
+            Color.parseColor(if (focusRunning) "#0381FE" else "#A1A1AA")
+        )
+    }
+
+    private fun formatDuration(totalSec: Int): String {
+        val m = totalSec / 60
+        val s = totalSec % 60
+        return String.format(Locale.US, "%d:%02d", m, s)
+    }
+
+    private fun showAddPromptDialog() {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(48, 24, 48, 8)
+        }
+        val etTitle = EditText(this).apply { hint = "Başlık (ör. Hızlı Özet)" }
+        val etCat = EditText(this).apply {
+            hint = "Kategori (Codex / Antigravity / Reklam)"
+            setText("Antigravity")
+        }
+        val etText = EditText(this).apply {
+            hint = "Yapıştırılacak prompt metni..."
+            minLines = 3
+        }
+        container.addView(etTitle)
+        container.addView(etCat)
+        container.addView(etText)
+
+        AlertDialog.Builder(this)
+            .setTitle("Yeni Prompt Ekle")
+            .setView(container)
+            .setPositiveButton("Kaydet") { _, _ ->
+                val title = etTitle.text.toString().trim()
+                val cat = etCat.text.toString().trim().ifEmpty { "Antigravity" }
+                val body = etText.text.toString().trim()
+                if (title.isNotEmpty() && body.isNotEmpty()) {
+                    wsClient.sendAddPrompt(title, cat, body.take(65), body)
+                    Toast.makeText(this, "Prompt PC kasasına eklendi", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("İptal", null)
+            .show()
     }
 }

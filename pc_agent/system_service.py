@@ -1,3 +1,5 @@
+import subprocess
+import time
 import psutil
 from typing import Any, Dict, List
 
@@ -40,6 +42,10 @@ class SystemService:
         self.ram_alert_threshold = ram_alert_threshold
         # Prime psutil cpu_percent so subsequent non-blocking calls return accurate values
         psutil.cpu_percent(interval=None)
+        self._last_net = psutil.net_io_counters()
+        self._last_net_time = time.time()
+        self._last_gpu_time = 0.0
+        self._cached_gpu = {"gpu": 0, "gpu_temp": 0, "gpu_name": "GTX 1650"}
 
     def set_ram_threshold(self, threshold: int) -> None:
         self.ram_alert_threshold = max(50, min(99, int(threshold)))
@@ -57,6 +63,9 @@ class SystemService:
         ram_avail_gb = round(vm.available / (1024 ** 3), 1)
 
         top_processes = self._get_top_processes(top_n=top_n)
+        gpu_info = self._get_gpu_stats()
+        disk_pct = round(psutil.disk_usage("C:\\").percent)
+        net_down_mbps, net_up_mbps = self._get_net_speed_mbps()
 
         return {
             "cpu": cpu_pct,
@@ -68,8 +77,51 @@ class SystemService:
             "ram_available_gb": ram_avail_gb,
             "ram_alert_threshold": self.ram_alert_threshold,
             "high_ram_alert": ram_pct >= self.ram_alert_threshold,
+            "gpu": gpu_info["gpu"],
+            "gpu_temp": gpu_info["gpu_temp"],
+            "gpu_name": gpu_info["gpu_name"],
+            "disk": disk_pct,
+            "net_down_mbps": net_down_mbps,
+            "net_up_mbps": net_up_mbps,
             "top_processes": top_processes,
         }
+
+    def _get_gpu_stats(self) -> Dict[str, Any]:
+        now = time.time()
+        if now - self._last_gpu_time < 2.0:
+            return self._cached_gpu
+        self._last_gpu_time = now
+        try:
+            out = subprocess.check_output(
+                [
+                    "nvidia-smi",
+                    "--query-gpu=utilization.gpu,temperature.gpu,name",
+                    "--format=csv,noheader,nounits",
+                ],
+                timeout=1.5,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            ).decode("utf-8", errors="ignore").strip()
+            if out:
+                parts = [p.strip() for p in out.splitlines()[0].split(",")]
+                if len(parts) >= 3:
+                    self._cached_gpu = {
+                        "gpu": int(float(parts[0])),
+                        "gpu_temp": int(float(parts[1])),
+                        "gpu_name": parts[2].replace("NVIDIA GeForce ", ""),
+                    }
+        except Exception:
+            pass
+        return self._cached_gpu
+
+    def _get_net_speed_mbps(self) -> tuple[float, float]:
+        now = time.time()
+        cur = psutil.net_io_counters()
+        dt = max(0.2, now - self._last_net_time)
+        down_mbps = round(((cur.bytes_recv - self._last_net.bytes_recv) * 8) / (dt * 1_000_000), 1)
+        up_mbps = round(((cur.bytes_sent - self._last_net.bytes_sent) * 8) / (dt * 1_000_000), 1)
+        self._last_net = cur
+        self._last_net_time = now
+        return max(0.0, down_mbps), max(0.0, up_mbps)
 
     def _get_top_processes(self, top_n: int = 8) -> List[Dict[str, Any]]:
         grouped: Dict[str, Dict[str, Any]] = {}

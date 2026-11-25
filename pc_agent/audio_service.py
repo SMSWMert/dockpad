@@ -158,6 +158,24 @@ class AudioService:
         finally:
             comtypes.CoUninitialize()
 
+    def toggle_master_mute(self) -> Dict[str, Any]:
+        if not PYCAW_AVAILABLE:
+            return {"ok": False, "error": "pycaw unavailable"}
+        comtypes.CoInitialize()
+        try:
+            speaker = AudioUtilities.GetSpeakers()
+            if not speaker:
+                return {"ok": False, "error": "No speaker found"}
+            interface = speaker.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+            endpoint_vol = cast(interface, POINTER(IAudioEndpointVolume))
+            is_muted = bool(endpoint_vol.GetMute())
+            endpoint_vol.SetMute(0 if is_muted else 1, None)
+            return {"ok": True, "master_muted": not is_muted}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
+        finally:
+            comtypes.CoUninitialize()
+
     def _set_default_endpoint_com(self, device_id: str) -> bool:
         """Uses undocumented Windows IPolicyConfig COM interface to switch default playback device."""
         try:

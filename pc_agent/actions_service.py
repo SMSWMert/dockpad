@@ -76,6 +76,11 @@ class ActionsService:
                     return self._audio_service.toggle_audio_output()
                 return {"ok": False, "error": "Audio service unavailable"}
 
+            if action_type == "internal" and target == "toggle_master_mute":
+                if self._audio_service:
+                    return self._audio_service.toggle_master_mute()
+                return {"ok": False, "error": "Audio service unavailable"}
+
             return {"ok": False, "error": f"Unsupported action type: {action_type}"}
         except Exception as exc:
             return {"ok": False, "error": str(exc)}

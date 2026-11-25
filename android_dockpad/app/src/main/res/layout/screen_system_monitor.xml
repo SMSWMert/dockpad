@@ -146,17 +146,18 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginBottom="12dp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_card_primary"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="20dp">
+                android:padding="18dp">
 
                 <com.dockpad.oneui7.CircularGaugeView
                     android:id="@+id/gaugeRam"
-                    android:layout_width="110dp"
-                    android:layout_height="110dp"
-                    android:layout_marginEnd="20dp" />
+                    android:layout_width="104dp"
+                    android:layout_height="104dp"
+                    android:layout_marginEnd="18dp" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -170,7 +171,7 @@
                         android:layout_height="wrap_content"
                         android:text="54%"
                         android:textColor="@color/text_primary"
-                        android:textSize="32sp"
+                        android:textSize="30sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -190,6 +191,46 @@
                         android:textColor="@color/text_muted"
                         android:textSize="12sp" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <!-- GPU, Disk & Network Strip -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_card_primary"
+                android:orientation="horizontal"
+                android:paddingHorizontal="18dp"
+                android:paddingVertical="14dp">
+
+                <TextView
+                    android:id="@+id/tvSysGpu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.2"
+                    android:text="GTX 1650: 0% • 0°C"
+                    android:textColor="@color/samsung_blue"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvSysDisk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.7"
+                    android:gravity="center"
+                    android:text="Disk: %0"
+                    android:textColor="@color/text_primary_soft"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvSysNet"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.1"
+                    android:gravity="end"
+                    android:text="↓ 0.0 • ↑ 0.0 Mbps"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
 

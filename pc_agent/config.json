@@ -51,6 +51,20 @@
       "type": "internal",
       "target": "toggle_audio_output",
       "icon": "headphones"
+    },
+    {
+      "id": "mute_master",
+      "label": "Tümünü Sustur",
+      "type": "internal",
+      "target": "toggle_master_mute",
+      "icon": "mute"
+    },
+    {
+      "id": "lock_pc",
+      "label": "PC Kilitle",
+      "type": "command",
+      "target": "rundll32.exe user32.dll,LockWorkStation",
+      "icon": "lock"
     }
   ],
   "prompts": [

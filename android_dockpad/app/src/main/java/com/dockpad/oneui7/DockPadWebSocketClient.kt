@@ -164,6 +164,16 @@ class DockPadWebSocketClient(
         })
     }
 
+    fun sendAddPrompt(title: String, category: String, description: String, text: String) {
+        sendJson(JSONObject().apply {
+            put("type", "add_prompt")
+            put("title", title)
+            put("category", category)
+            put("description", description)
+            put("text", text)
+        })
+    }
+
     fun sendSyncConfig(ramThreshold: Int) {
         sendJson(JSONObject().apply {
             put("type", "sync_config")
@@ -281,6 +291,12 @@ class DockPadWebSocketClient(
             ramAvailableGb = json.optDouble("ram_available_gb", 24.0),
             ramAlertThreshold = json.optInt("ram_alert_threshold", 85),
             highRamAlert = json.optBoolean("high_ram_alert", false),
+            gpu = json.optInt("gpu", 0),
+            gpuTemp = json.optInt("gpu_temp", 0),
+            gpuName = json.optString("gpu_name", "GTX 1650"),
+            disk = json.optInt("disk", 0),
+            netDownMbps = json.optDouble("net_down_mbps", 0.0),
+            netUpMbps = json.optDouble("net_up_mbps", 0.0),
             topProcesses = procs,
             media = media,
             audioOutput = json.optString("audio_output", "Hoparlör"),

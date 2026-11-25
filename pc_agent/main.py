@@ -17,6 +17,7 @@ from clipboard_prompts import ClipboardPromptsService
 from media_service import MediaService
 from notifications_service import NotificationsService
 from system_service import SystemService
+from weather_service import WeatherService
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.json"
@@ -35,6 +36,7 @@ audio_service = AudioService()
 clipboard_service = ClipboardPromptsService(prompts=config.get("prompts", []))
 notifications_service = NotificationsService()
 actions_service = ActionsService(actions=config.get("actions", []), audio_service=audio_service)
+weather_service = WeatherService(fallback_weather=config.get("weather", {}))
 
 app = FastAPI(title="One UI 7 Dock Pad PC Agent", version="1.0.0")
 connected_clients: Set[WebSocket] = set()
@@ -95,6 +97,7 @@ async def build_state_payload() -> Dict[str, Any]:
     )
     audio_state = await asyncio.to_thread(audio_service.get_sessions)
     clipboard_history = await asyncio.to_thread(clipboard_service.get_clipboard_history)
+    weather_info = await asyncio.to_thread(weather_service.get_weather)
     await _run_winrt_safe(notifications_service.poll_windows_notifications, None)
 
     return {
@@ -109,6 +112,12 @@ async def build_state_payload() -> Dict[str, Any]:
         "ram_available_gb": telemetry["ram_available_gb"],
         "ram_alert_threshold": telemetry["ram_alert_threshold"],
         "high_ram_alert": telemetry["high_ram_alert"],
+        "gpu": telemetry.get("gpu", 0),
+        "gpu_temp": telemetry.get("gpu_temp", 0),
+        "gpu_name": telemetry.get("gpu_name", "GTX 1650"),
+        "disk": telemetry.get("disk", 0),
+        "net_down_mbps": telemetry.get("net_down_mbps", 0.0),
+        "net_up_mbps": telemetry.get("net_up_mbps", 0.0),
         "top_processes": telemetry["top_processes"],
         "media": media_state,
         "audio_output": audio_state["output_device"],
@@ -117,7 +126,7 @@ async def build_state_payload() -> Dict[str, Any]:
         "prompts": clipboard_service.get_prompts(),
         "actions": actions_service.get_actions(),
         "notifications": notifications_service.get_notifications(),
-        "weather": config.get("weather", {"city": "Ankara", "temp_c": 6, "condition": "Açık"}),
+        "weather": weather_info,
     }
 
 
@@ -187,6 +196,7 @@ async def push_notification(req: NotifyRequest) -> Dict[str, Any]:
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket) -> None:
+    global config
     await websocket.accept()
     connected_clients.add(websocket)
     try:
@@ -234,8 +244,23 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
             elif msg_type == "clear_notifications":
                 notifications_service.clear_all()
 
+            elif msg_type == "add_prompt":
+                new_prompt = {
+                    "id": f"p_{int(time.time() * 1000)}",
+                    "title": str(msg.get("title", "Yeni Prompt")).strip() or "Yeni Prompt",
+                    "category": str(msg.get("category", "Antigravity")).strip() or "Antigravity",
+                    "description": str(msg.get("description", "Özel şablon")).strip() or "Özel şablon",
+                    "text": str(msg.get("text", "")),
+                }
+                if new_prompt["text"]:
+                    prompts_list = config.get("prompts", [])
+                    prompts_list.insert(0, new_prompt)
+                    config["prompts"] = prompts_list
+                    with open(CONFIG_PATH, "w", encoding="utf-8") as f:
+                        json.dump(config, f, ensure_ascii=False, indent=2)
+                    clipboard_service.update_prompts(prompts_list)
+
             elif msg_type == "sync_config":
-                global config
                 config = load_config()
                 if "ram_threshold" in msg:
                     system_service.set_ram_threshold(int(msg["ram_threshold"]))
@@ -243,6 +268,7 @@ async def websocket_endpoint(websocket: WebSocket) -> None:
                     system_service.set_ram_threshold(int(config.get("ram_alert_threshold", 85)))
                 clipboard_service.update_prompts(config.get("prompts", []))
                 actions_service.reload(config.get("actions", []))
+                weather_service.update_config(config.get("weather", {}))
 
             await websocket.send_text(json.dumps({"type": "ack", "for": msg_type, "result": result}, ensure_ascii=False))
             await broadcast_state()

@@ -83,7 +83,7 @@
             android:id="@+id/btnDashTelemetry"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/bg_pill_dark"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -93,9 +93,19 @@
                 android:id="@+id/tvDashCpu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="8dp"
                 android:text="CPU 0%"
                 android:textColor="@color/samsung_blue"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDashGpu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="GPU 0%"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -108,6 +118,20 @@
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
+
+        <!-- Focus Timer Pill (Tap: Start/Pause, Long-tap: Reset) -->
+        <TextView
+            android:id="@+id/tvDashFocus"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/bg_pill_dark"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:text="Odak 25:00"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvDashClock"
@@ -198,6 +222,33 @@
                         android:text="Monster Abra A7"
                         android:textColor="@color/text_secondary"
                         android:textSize="13sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <ProgressBar
+                            android:id="@+id/pbDashMedia"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="0dp"
+                            android:layout_height="3dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_weight="1"
+                            android:max="100"
+                            android:progress="0"
+                            android:progressDrawable="@drawable/seekbar_oneui_progress" />
+
+                        <TextView
+                            android:id="@+id/tvDashMediaTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0:00 / 0:00"
+                            android:textColor="@color/text_muted"
+                            android:textSize="10sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <ImageView
@@ -308,10 +359,10 @@
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
-                <!-- Row 1 -->
+                <!-- Row 1 (4 tiles) -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="44dp"
                     android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
 
@@ -319,69 +370,69 @@
                         android:id="@+id/btnActionCodex"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
                         android:text="ChatGPT"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/btnActionAntigravity"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
                         android:text="Antigravity"
                         android:textColor="@color/samsung_blue"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/btnActionMetaAds"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
                         android:text="Meta Ads"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Row 2 -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/btnActionPremiere"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
                         android:text="Premiere"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Row 2 (4 tiles) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/btnActionScreenshot"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginEnd="8dp"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
-                        android:text="Ekran Görüntüsü"
+                        android:text="Ekran Al"
                         android:textColor="@color/text_primary"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -390,12 +441,38 @@
                         android:id="@+id/btnActionAudioSwitch"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
                         android:background="@drawable/bg_card_secondary"
                         android:gravity="center"
                         android:text="Ses Çıkışı"
                         android:textColor="@color/text_primary"
-                        android:textSize="13sp"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnActionMuteMaster"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card_secondary"
+                        android:gravity="center"
+                        android:text="Sustur"
+                        android:textColor="@color/text_primary_soft"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/btnActionLockPc"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_card_secondary"
+                        android:gravity="center"
+                        android:text="PC Kilitle"
+                        android:textColor="@color/alert_red"
+                        android:textSize="12sp"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
