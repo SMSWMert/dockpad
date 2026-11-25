@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class MainActivity : AppCompatActivity() {
 
@@ -719,8 +720,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateClockViews() {
         val now = Date()
-        val timeStr = SimpleDateFormat("HH:mm", Locale.getDefault()).format(now)
-        val dateStr = SimpleDateFormat("d MMMM EEEE", Locale("tr", "TR")).format(now)
+        val trTz = TimeZone.getTimeZone("GMT+03:00")
+        val timeFmt = SimpleDateFormat("HH:mm", Locale.getDefault()).apply { timeZone = trTz }
+        val dateFmt = SimpleDateFormat("d MMMM EEEE", Locale("tr", "TR")).apply { timeZone = trTz }
+        val timeStr = timeFmt.format(now)
+        val dateStr = dateFmt.format(now)
 
         tvPairingClock.text = timeStr
         tvDashClock.text = timeStr
